@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * DeleteUserFavoritesHandler is a Request Handler that takes in a path parameter bearing the user_id and
- * removes a certain set of favorited cards from the user's record. This is a soft delete and actually has no influence
+ * removes a certain set of favorite cards from the user's record. This is a soft delete and actually has no influence
  * on the list of SetDocuments upon their table. No referential integrity is intended by design.
  *
  * @author John Callahan (the heraldOfMechanus)
