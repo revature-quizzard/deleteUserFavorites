@@ -4,3 +4,6 @@
 
 # Build folder
 /target/
+
+# Log files
+*.log
