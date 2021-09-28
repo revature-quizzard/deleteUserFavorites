@@ -47,6 +47,7 @@ public class UserFavoritesRepository {
  * It is very much a Data Transfer Object.
  */
 @Data
+@AllArgsConstructor
 @DynamoDBTable(tableName = "Users")
 class User {
     @DynamoDBHashKey

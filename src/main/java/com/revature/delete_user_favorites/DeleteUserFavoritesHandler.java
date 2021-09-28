@@ -21,13 +21,14 @@ import java.util.Map;
 public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Gson mapper = new GsonBuilder().setPrettyPrinting().create();
-    private UserFavoritesRepository userFavRepo = new UserFavoritesRepository();
+    private UserFavoritesRepository userFavRepo;
 
     public DeleteUserFavoritesHandler(UserFavoritesRepository userFavRepo) {
         this.userFavRepo = userFavRepo;
     }
 
     public DeleteUserFavoritesHandler() {
+        this.userFavRepo = new UserFavoritesRepository();
     }
 
     /**
