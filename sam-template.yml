@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Removes one favorited set from the user metadata Favorited Set Documents list.
+Resources:
+  DeleteFavoritedSetFx:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/post_profile_picture-1.0.jar
+      Handler: <QUALIFIED_HANDLER_URL>
+      Runtime: java8.al2
+      Description: Java function
+      MemorySize: 256
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - <YOUR_POLICIES_HERE>
