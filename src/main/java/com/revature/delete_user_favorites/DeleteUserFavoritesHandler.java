@@ -11,6 +11,13 @@ import com.google.gson.GsonBuilder;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DeleteUserFavoritesHandler is a Request Handler that takes in a path parameter bearing the user_id and
+ * removes a certain set of favorited cards from the user's record. This is a soft delete and actually has no influence
+ * on the list of SetDocuments upon their table. No referential integrity is intended by design.
+ *
+ * @author John Callahan (the heraldOfMechanus)
+ */
 public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Gson mapper = new GsonBuilder().setPrettyPrinting().create();
@@ -23,6 +30,13 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
     public DeleteUserFavoritesHandler() {
     }
 
+    /**
+     * @param requestEvent - An APIGatewayProxyRequestEvent. Holds a JSON body bearing a set that they wish to have removed,
+     *                    as well as a path parameter that tells the server whom the favorited set belongs to.
+     * @param context - Holds the logger and is a necessary part of this application as an auxiliary source of information
+     *               regarding any surrounding circumstances of the request.
+     * @return - The JSON reply bearing the message and status code of the outcome, if any.
+     */
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
