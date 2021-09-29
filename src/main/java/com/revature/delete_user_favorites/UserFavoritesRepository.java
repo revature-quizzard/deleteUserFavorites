@@ -92,10 +92,22 @@ class User {
 class SetDocument {
     private String id;
     private String name;
-    private List<String> tags;
+    private List<Tags> tags;
     private boolean isPublic;
     private int views;
     private int plays;
     private int studies;
     private int favorites;
+}
+
+/**
+ * Tags is a necessary pojo for persisting data from the DynamoDB to access
+ * the users from the database. Without the Tags, it is impossible to handle
+ * user data safely.
+ */
+@Data
+@AllArgsConstructor
+class Tags {
+    private String tagName;
+    private String tagColor;
 }
