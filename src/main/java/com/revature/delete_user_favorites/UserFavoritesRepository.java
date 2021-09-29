@@ -2,6 +2,7 @@ package com.revature.delete_user_favorites;
 
 import com.revature.delete_user_favorites.exceptions.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -60,6 +61,7 @@ public class UserFavoritesRepository {
  * It is very much a Data Transfer Object.
  */
 @Data
+@Builder
 @DynamoDbBean
 class User {
     private String id;
