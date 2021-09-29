@@ -13,7 +13,6 @@ import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ public class UserFavoritesRepository {
      */
     public User findUserById(String id) {
         AttributeValue val = AttributeValue.builder().s(id).build();
-        Expression filter = Expression.builder().expression("#a = :b") .putExpressionName("#a", "username").putExpressionValue(":b", val).build();
+        Expression filter = Expression.builder().expression("#a = :b") .putExpressionName("#a", "id").putExpressionValue(":b", val).build();
         ScanEnhancedRequest request = ScanEnhancedRequest.builder().filterExpression(filter).build();
 
         User user = userTable.scan(request).stream().findFirst().orElseThrow(ResourceNotFoundException::new).items().get(0);
@@ -52,7 +51,7 @@ public class UserFavoritesRepository {
      * @return - The user that was successfully persisted to the database.
      */
     public User saveUser(User user) {
-        return null;
+        return userTable.updateItem(user);
     }
 }
 
