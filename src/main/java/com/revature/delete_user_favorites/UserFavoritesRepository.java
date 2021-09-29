@@ -1,12 +1,18 @@
 package com.revature.delete_user_favorites;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.revature.delete_user_favorites.exceptions.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.List;
 
@@ -15,13 +21,16 @@ import java.util.List;
  */
 public class UserFavoritesRepository {
 
-    private DynamoDBMapper dbReader = new DynamoDBMapper(AmazonDynamoDBAsyncClientBuilder.defaultClient());
+    private final DynamoDbTable<User> userTable;
 
-    public UserFavoritesRepository(DynamoDBMapper dbReader) {
-        this.dbReader = dbReader;
+    public UserFavoritesRepository(DynamoDbTable<User> testTable) {
+        userTable = testTable;
     }
 
     public UserFavoritesRepository() {
+        DynamoDbClient dbReader = DynamoDbClient.builder().httpClient(ApacheHttpClient.create()).build();
+        DynamoDbEnhancedClient dbClient = DynamoDbEnhancedClient.builder().dynamoDbClient(dbReader).build();
+        userTable = dbClient.table("Users", TableSchema.fromBean(User.class));
     }
 
     /**
@@ -29,7 +38,13 @@ public class UserFavoritesRepository {
      * @return - An object containing all of a user's data and their list of created/favorited sets.
      */
     public User findUserById(String id) {
-        return dbReader.load(User.class, id);
+        AttributeValue val = AttributeValue.builder().s(id).build();
+        Expression filter = Expression.builder().expression("#a = :b") .putExpressionName("#a", "username").putExpressionValue(":b", val).build();
+        ScanEnhancedRequest request = ScanEnhancedRequest.builder().filterExpression(filter).build();
+
+        User user = userTable.scan(request).stream().findFirst().orElseThrow(ResourceNotFoundException::new).items().get(0);
+        System.out.println("USER WITH ID: " + user);
+        return user;
     }
 
     /**
@@ -37,8 +52,7 @@ public class UserFavoritesRepository {
      * @return - The user that was successfully persisted to the database.
      */
     public User saveUser(User user) {
-        dbReader.save(user);
-        return user;
+        return null;
     }
 }
 
@@ -47,39 +61,23 @@ public class UserFavoritesRepository {
  * It is very much a Data Transfer Object.
  */
 @Data
-@AllArgsConstructor
-@DynamoDBTable(tableName = "Users")
+@DynamoDbBean
 class User {
-    @DynamoDBHashKey
-    @DynamoDBAttribute
     private String id;
-
-    @DynamoDBAttribute
     private String username;
-
-    @DynamoDBAttribute
     private List<SetDocument> favoriteSets;
-
-    @DynamoDBAttribute
     private List<SetDocument> createdSets;
-
-    @DynamoDBAttribute
     private String profilePicture;
-
-    @DynamoDBAttribute
     private int points;
-
-    @DynamoDBAttribute
     private int wins;
-
-    @DynamoDBAttribute
     private int losses;
-
-    @DynamoDBAttribute
     private String registrationDate;
-
-    @DynamoDBAttribute
     private List<String> gameRecords;
+
+    @DynamoDbPartitionKey
+    public String getId() {
+        return id;
+    }
 }
 
 /**
@@ -111,3 +109,4 @@ class Tags {
     private String tagName;
     private String tagColor;
 }
+
