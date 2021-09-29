@@ -5,8 +5,8 @@ Resources:
   DeleteFavoritedSetFx:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: target/post_profile_picture-1.0.jar
-      Handler: <QUALIFIED_HANDLER_URL>
+      CodeUri: target/delete_user_favorite_set-1.0.jar
+      Handler: com.revature.delete_user_favorites.DeleteUserFavoritesHandler
       Runtime: java8.al2
       Description: Java function
       MemorySize: 256
