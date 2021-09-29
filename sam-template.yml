@@ -13,4 +13,4 @@ Resources:
       Timeout: 30
       Tracing: Active
       Policies:
-        - <YOUR_POLICIES_HERE>
+        - arn:aws:iam::011217676466:policy/dynamodb-update-users-item
