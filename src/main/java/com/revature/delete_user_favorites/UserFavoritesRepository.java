@@ -66,13 +66,13 @@ public class UserFavoritesRepository {
 class User {
     private String id;
     private String username;
-    private List<SetDocument> favorite_sets;
-    private List<SetDocument> created_sets;
-    private String profile_picture;
+    private List<SetDocument> favoriteSets;
+    private List<SetDocument> createdSets;
+    private String profilePicture;
     private int points;
     private int wins;
     private int losses;
-    private String registration_date;
+    private String registrationDate;
     private List<String> gameRecords;
 
     @DynamoDbPartitionKey
@@ -90,7 +90,7 @@ class User {
 @AllArgsConstructor
 class SetDocument {
     private String id;
-    private String set_name;
+    private String setName;
     private List<Tags> tags;
     private String author;
     private boolean isPublic;
@@ -108,7 +108,7 @@ class SetDocument {
 @Data
 @AllArgsConstructor
 class Tags {
-    private String name;
-    private String color;
+    private String tagName;
+    private String tagColor;
 }
 
