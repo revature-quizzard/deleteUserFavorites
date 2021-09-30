@@ -30,7 +30,7 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
     }
 
     public DeleteUserFavoritesHandler() {
-        this.userFavRepo = new UserFavoritesRepository();
+        this.userFavRepo = UserFavoritesRepository.getInstance();
     }
 
     /**
