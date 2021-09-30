@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.revature.delete_user_favorites.models.SetDocument;
+import com.revature.delete_user_favorites.models.User;
 import com.revature.delete_user_favorites.stubs.TestLogger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -57,7 +58,8 @@ class DeleteUserFavoritesHandlerTest {
     void handleRequest() {
         // Arrange
         List<SetDocument> testDocs = new ArrayList<>();
-        SetDocument testDoc = new SetDocument(null, null, null, true, 12, 4, 2, 69);
+        SetDocument testDoc = new SetDocument();
+        testDoc.setId("test");
         testDocs.add(testDoc);
         User user = new User(null, null, testDocs, null, null, 69, 4, 4, null, null);
 
@@ -81,7 +83,7 @@ class DeleteUserFavoritesHandlerTest {
     void handleRequest_return400_ifParamsNull() {
         // Arrange
         List<SetDocument> testDocs = new ArrayList<>();
-        SetDocument testDoc = new SetDocument(null, null, null, true, 12, 4, 2, 69);
+        SetDocument testDoc = new SetDocument();
         testDocs.add(testDoc);
         User user = new User(null, null, testDocs, null, null, 69, 4, 4, null, null);
 
