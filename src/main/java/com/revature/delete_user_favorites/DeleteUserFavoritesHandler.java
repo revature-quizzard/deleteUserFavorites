@@ -7,6 +7,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.revature.delete_user_favorites.models.SetDocument;
+import com.revature.delete_user_favorites.models.User;
 
 import java.util.List;
 import java.util.Map;
@@ -21,14 +23,14 @@ import java.util.Map;
 public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Gson mapper = new GsonBuilder().setPrettyPrinting().create();
-    private UserFavoritesRepository userFavRepo;
-
-    public DeleteUserFavoritesHandler(UserFavoritesRepository userFavRepo) {
-        this.userFavRepo = userFavRepo;
-    }
+    private final UserFavoritesRepository userFavRepo;
 
     public DeleteUserFavoritesHandler() {
         this.userFavRepo = new UserFavoritesRepository();
+    }
+
+    public DeleteUserFavoritesHandler(UserFavoritesRepository userFavRepo) {
+        this.userFavRepo = userFavRepo;
     }
 
     /**
@@ -58,9 +60,9 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
             // Grab the complete user, loading them into memory
             User user = userFavRepo.findUserById(params.get("user_id"));
 
-            // List all of the user's favorited sets. Removes the set found in the body of the request.
+            // List all of the user's favorited sets. Removes the set with matching id found in the body of the request.
             List<SetDocument> sets = user.getFavoriteSets();
-            sets.remove(set);
+            sets.removeIf(a -> a.getId().equals(set.getId()));
 
             // Overwrites the former list of sets with the altered set list.
             user.setFavoriteSets(sets);

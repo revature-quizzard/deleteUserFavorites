@@ -5,27 +5,24 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.revature.delete_user_favorites.models.SetDocument;
+import com.revature.delete_user_favorites.models.User;
 import com.revature.delete_user_favorites.stubs.TestLogger;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DeleteUserFavoritesHandlerTest {
 
     static TestLogger testLogger;
-    private Gson mapper = new GsonBuilder().setPrettyPrinting().create();
+    static final Gson mapper = new GsonBuilder().setPrettyPrinting().create();
 
     DeleteUserFavoritesHandler sut;
     Context mockContext;
@@ -36,28 +33,31 @@ class DeleteUserFavoritesHandlerTest {
         testLogger = new TestLogger();
     }
 
+    @AfterAll
+    public static void afterAllTests() {
+        testLogger.close();
+    }
+
     @BeforeEach
     void setUp() {
-        mockContext = mock(Context.class);
         mockUserRepo = mock(UserFavoritesRepository.class);
-
         sut = new DeleteUserFavoritesHandler(mockUserRepo);
-
+        mockContext = mock(Context.class);
         when(mockContext.getLogger()).thenReturn(testLogger);
     }
 
     @AfterEach
     void tearDown() {
         sut = null;
-        mockContext = null;
-        mockUserRepo = null;
+        reset(mockContext, mockUserRepo);
     }
 
     @Test
     void handleRequest() {
         // Arrange
         List<SetDocument> testDocs = new ArrayList<>();
-        SetDocument testDoc = new SetDocument(null, null, null, true, 12, 4, 2, 69);
+        SetDocument testDoc = new SetDocument();
+        testDoc.setId("test");
         testDocs.add(testDoc);
         User user = new User(null, null, testDocs, null, null, 69, 4, 4, null, null);
 
@@ -81,7 +81,7 @@ class DeleteUserFavoritesHandlerTest {
     void handleRequest_return400_ifParamsNull() {
         // Arrange
         List<SetDocument> testDocs = new ArrayList<>();
-        SetDocument testDoc = new SetDocument(null, null, null, true, 12, 4, 2, 69);
+        SetDocument testDoc = new SetDocument();
         testDocs.add(testDoc);
         User user = new User(null, null, testDocs, null, null, 69, 4, 4, null, null);
 
