@@ -16,20 +16,17 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
  */
 public class UserFavoritesRepository {
 
-    public static final UserFavoritesRepository userFavoritesRepository = new UserFavoritesRepository();
     private final DynamoDbTable<User> userTable;
 
-    public UserFavoritesRepository(DynamoDbTable<User> testTable) {
-        userTable = testTable;
-    }
-
-    private UserFavoritesRepository() {
+    public UserFavoritesRepository() {
         DynamoDbClient dbReader = DynamoDbClient.builder().httpClient(ApacheHttpClient.create()).build();
         DynamoDbEnhancedClient dbClient = DynamoDbEnhancedClient.builder().dynamoDbClient(dbReader).build();
         userTable = dbClient.table("Users", TableSchema.fromBean(User.class));
     }
 
-    public static UserFavoritesRepository getInstance(){ return userFavoritesRepository; }
+    public UserFavoritesRepository(DynamoDbTable<User> userTable) {
+        this.userTable = userTable;
+    }
 
     /**
      * @param id - Necessary for knowing who to return.

@@ -25,12 +25,12 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
     private static final Gson mapper = new GsonBuilder().setPrettyPrinting().create();
     private final UserFavoritesRepository userFavRepo;
 
-    public DeleteUserFavoritesHandler(UserFavoritesRepository userFavRepo) {
-        this.userFavRepo = userFavRepo;
+    public DeleteUserFavoritesHandler() {
+        this.userFavRepo = new UserFavoritesRepository();
     }
 
-    public DeleteUserFavoritesHandler() {
-        this.userFavRepo = UserFavoritesRepository.getInstance();
+    public DeleteUserFavoritesHandler(UserFavoritesRepository userFavRepo) {
+        this.userFavRepo = userFavRepo;
     }
 
     /**
