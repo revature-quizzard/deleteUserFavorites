@@ -66,6 +66,7 @@ class DeleteUserFavoritesHandlerTest {
         testDocs.add(testDoc);
         User user = new User(null, null, testDocs, null, null, 69, 4, 4, null, null);
         Set validSet = new Set();
+        validSet.setId("test");
 
         APIGatewayProxyRequestEvent mockRequest = new APIGatewayProxyRequestEvent();
         mockRequest.withPath("/users/favorites");
@@ -82,6 +83,7 @@ class DeleteUserFavoritesHandlerTest {
         APIGatewayProxyResponseEvent responseEvent = sut.handleRequest(mockRequest, mockContext);
 
         // Assert
+        System.out.println(responseEvent.getBody());
         assertEquals(202, responseEvent.getStatusCode());
     }
 
