@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.revature.delete_user_favorites.models.SetDocument;
 import com.revature.delete_user_favorites.models.User;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,12 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+
+        // For CORS
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization");
+        headers.put("Access-Control-Allow-Origin", "*");
+        responseEvent.setHeaders(headers);
 
         LambdaLogger logger = context.getLogger();
         logger.log("RECEIVED EVENT: " + requestEvent);
