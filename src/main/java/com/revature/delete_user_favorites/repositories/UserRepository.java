@@ -1,4 +1,4 @@
-package com.revature.delete_user_favorites;
+package com.revature.delete_user_favorites.repositories;
 
 import com.revature.delete_user_favorites.models.User;
 import lombok.SneakyThrows;
@@ -14,17 +14,17 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 /**
  * A repository-layer class used for querying DynamoDB using the DynamoDBMapper.
  */
-public class UserFavoritesRepository {
+public class UserRepository {
 
     private final DynamoDbTable<User> userTable;
 
-    public UserFavoritesRepository() {
+    public UserRepository() {
         DynamoDbClient dbReader = DynamoDbClient.builder().httpClient(ApacheHttpClient.create()).build();
         DynamoDbEnhancedClient dbClient = DynamoDbEnhancedClient.builder().dynamoDbClient(dbReader).build();
         userTable = dbClient.table("Users", TableSchema.fromBean(User.class));
     }
 
-    public UserFavoritesRepository(DynamoDbTable<User> userTable) {
+    public UserRepository(DynamoDbTable<User> userTable) {
         this.userTable = userTable;
     }
 

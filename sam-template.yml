@@ -14,3 +14,4 @@ Resources:
       Tracing: Active
       Policies:
         - arn:aws:iam::011217676466:policy/dynamodb-update-users-item
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess

@@ -5,8 +5,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.revature.delete_user_favorites.models.Set;
 import com.revature.delete_user_favorites.models.SetDocument;
 import com.revature.delete_user_favorites.models.User;
+import com.revature.delete_user_favorites.repositories.SetRepository;
+import com.revature.delete_user_favorites.repositories.UserRepository;
 import com.revature.delete_user_favorites.stubs.TestLogger;
 import org.junit.jupiter.api.*;
 
@@ -26,7 +29,8 @@ class DeleteUserFavoritesHandlerTest {
 
     DeleteUserFavoritesHandler sut;
     Context mockContext;
-    UserFavoritesRepository mockUserRepo;
+    UserRepository mockUserRepo;
+    SetRepository mockSetRepo;
 
     @BeforeAll
     static void beforeAll() {
@@ -40,8 +44,9 @@ class DeleteUserFavoritesHandlerTest {
 
     @BeforeEach
     void setUp() {
-        mockUserRepo = mock(UserFavoritesRepository.class);
-        sut = new DeleteUserFavoritesHandler(mockUserRepo);
+        mockUserRepo = mock(UserRepository.class);
+        mockSetRepo = mock(SetRepository.class);
+        sut = new DeleteUserFavoritesHandler(mockUserRepo, mockSetRepo);
         mockContext = mock(Context.class);
         when(mockContext.getLogger()).thenReturn(testLogger);
     }
@@ -60,6 +65,8 @@ class DeleteUserFavoritesHandlerTest {
         testDoc.setId("test");
         testDocs.add(testDoc);
         User user = new User(null, null, testDocs, null, null, 69, 4, 4, null, null);
+        Set validSet = new Set();
+        validSet.setId("test");
 
         APIGatewayProxyRequestEvent mockRequest = new APIGatewayProxyRequestEvent();
         mockRequest.withPath("/users/favorites");
@@ -68,12 +75,15 @@ class DeleteUserFavoritesHandlerTest {
         mockRequest.withHeaders(Collections.singletonMap("Content-type", "application/json"));
         mockRequest.withBody(mapper.toJson(testDoc));
 
+        when(mockSetRepo.getSetById(anyString())).thenReturn(validSet);
         when(mockUserRepo.findUserById(anyString())).thenReturn(user);
         when(mockUserRepo.saveUser(any(User.class))).thenReturn(user);
+
         // Act
         APIGatewayProxyResponseEvent responseEvent = sut.handleRequest(mockRequest, mockContext);
 
         // Assert
+        System.out.println(responseEvent.getBody());
         assertEquals(202, responseEvent.getStatusCode());
     }
 
