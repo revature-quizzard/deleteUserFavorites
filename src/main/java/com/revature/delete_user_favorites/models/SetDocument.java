@@ -32,5 +32,17 @@ public class SetDocument {
     public SetDocument() {
         super();
     }
+
+    public SetDocument(Set subject) {
+        this.id = subject.getId();
+        this.setName = subject.getSetName();
+        this.tags = subject.getTags();
+        this.isPublic = subject.isPublic();
+        this.author = subject.getAuthor();
+        this.views = subject.getViews();
+        this.plays = subject.getPlays();
+        this.studies = subject.getStudies();
+        this.favorites = subject.getFavorites();
+    }
 }
 

@@ -7,8 +7,12 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.revature.delete_user_favorites.models.Set;
 import com.revature.delete_user_favorites.models.SetDocument;
 import com.revature.delete_user_favorites.models.User;
+import com.revature.delete_user_favorites.repositories.SetRepository;
+import com.revature.delete_user_favorites.repositories.UserRepository;
+import software.amazon.awssdk.http.HttpStatusCode;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,14 +28,17 @@ import java.util.Map;
 public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Gson mapper = new GsonBuilder().setPrettyPrinting().create();
-    private final UserFavoritesRepository userFavRepo;
+    private final UserRepository userRepo;
+    private final SetRepository setRepo;
 
     public DeleteUserFavoritesHandler() {
-        this.userFavRepo = new UserFavoritesRepository();
+        this.userRepo = new UserRepository();
+        setRepo = new SetRepository();
     }
 
-    public DeleteUserFavoritesHandler(UserFavoritesRepository userFavRepo) {
-        this.userFavRepo = userFavRepo;
+    public DeleteUserFavoritesHandler(UserRepository userRepo, SetRepository setRepo) {
+        this.userRepo = userRepo;
+        this.setRepo = setRepo;
     }
 
     /**
@@ -54,28 +61,52 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
         LambdaLogger logger = context.getLogger();
         logger.log("RECEIVED EVENT: " + requestEvent);
 
+        // Retrieving setDocument from body
         Map<String, String> params = requestEvent.getQueryStringParameters();
-        SetDocument set = mapper.fromJson(requestEvent.getBody(), SetDocument.class);
+        SetDocument setDoc = mapper.fromJson(requestEvent.getBody(), SetDocument.class);
 
-        if (params == null || set == null) {
+        if (params == null || setDoc == null) {
             logger.log("Error: No parameters, or no set found to delete!");
             responseEvent.setStatusCode(400);
             responseEvent.setBody(mapper.toJson("Error: No parameters, or no set found to delete!"));
         }
 
         try {
-            // Grab the complete user, loading them into memory
-            User user = userFavRepo.findUserById(params.get("user_id"));
+            // Retrieving set from database
+            Set set = setRepo.getSetById(setDoc.getId());
 
-            // List all of the user's favorited sets. Removes the set with matching id found in the body of the request.
+            if (set == null){
+                logger.log("No set found with provided ID.");
+                responseEvent.setStatusCode(HttpStatusCode.BAD_REQUEST);
+                responseEvent.setBody("Set not found");
+                return responseEvent;
+            }
+
+            // Populate values of setDoc to match the document found
+            setDoc = new SetDocument(set);
+
+            // Retrieve user data
+            User user = userRepo.findUserById(params.get("user_id"));
+
+            // List all of a user's favorite sets. Check if the setDoc exists in useFavorites. If not, return 400.
             List<SetDocument> sets = user.getFavoriteSets();
-            sets.removeIf(a -> a.getId().equals(set.getId()));
+            if(sets.contains(setDoc))
+                sets.remove(setDoc);
+            else {
+                responseEvent.setStatusCode(HttpStatusCode.BAD_REQUEST);
+                responseEvent.setBody("Set not found in user favorites!");
+                return responseEvent;
+            }
 
-            // Overwrites the former list of sets with the altered set list.
+            // Update set favorite count
+            set.setFavorites(set.getFavorites() - 1);
+
+            // Overwrite the former list of sets with the altered set list.
             user.setFavoriteSets(sets);
 
-            // Ship the user back to dynamoDB
-            userFavRepo.saveUser(user);
+            // Update documents in DynamoDB
+            setRepo.updateSet(set);
+            userRepo.saveUser(user);
             logger.log("User successfully updated!");
 
             // Update the response event to indicate success.
