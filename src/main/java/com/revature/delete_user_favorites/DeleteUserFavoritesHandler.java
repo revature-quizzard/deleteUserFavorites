@@ -101,13 +101,6 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
                 return responseEvent;
             }
             sets.remove(delSet);
-//            if(sets.contains(setDoc))
-//                sets.remove(setDoc);
-//            else {
-//                responseEvent.setStatusCode(HttpStatusCode.BAD_REQUEST);
-//                responseEvent.setBody("Set not found in user favorites!");
-//                return responseEvent;
-//            }
 
             // Update set favorite count
             set.setFavorites(set.getFavorites() - 1);
