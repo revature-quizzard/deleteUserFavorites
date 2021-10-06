@@ -64,7 +64,7 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
         // Retrieving setDocument from body
         Map<String, String> params = requestEvent.getQueryStringParameters();
         SetDocument setDoc = mapper.fromJson(requestEvent.getBody(), SetDocument.class);
-
+        logger.log("SET ID: " + setDoc.getId());
         if (params == null || setDoc == null) {
             logger.log("Error: No parameters, or no set found to delete!");
             responseEvent.setStatusCode(400);
@@ -74,7 +74,7 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
         try {
             // Retrieving set from database
             Set set = setRepo.getSetById(setDoc.getId());
-
+            logger.log("SET FOUND : " + set.toString() + "\n");
             if (set == null){
                 logger.log("No set found with provided ID.");
                 responseEvent.setStatusCode(HttpStatusCode.BAD_REQUEST);
@@ -87,7 +87,8 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
 
             // Retrieve user data
             User user = userRepo.findUserById(params.get("user_id"));
-
+            logger.log("USER FOUND: " + user.getId()+ "\n" +
+                    "WITH FAVORITES: "+ user.getFavoriteSets().toString());
             // List all of a user's favorite sets. Check if the setDoc exists in useFavorites. If not, return 400.
             List<SetDocument> sets = user.getFavoriteSets();
             if(sets.contains(setDoc))
