@@ -89,15 +89,25 @@ public class DeleteUserFavoritesHandler implements RequestHandler<APIGatewayProx
             User user = userRepo.findUserById(params.get("user_id"));
             logger.log("USER FOUND: " + user.getId()+ "\n" +
                     "WITH FAVORITES: "+ user.getFavoriteSets().toString());
+
             // List all of a user's favorite sets. Check if the setDoc exists in useFavorites. If not, return 400.
             List<SetDocument> sets = user.getFavoriteSets();
-            if(sets.contains(setDoc))
-                sets.remove(setDoc);
-            else {
+
+            SetDocument delSet = sets.stream().filter(s -> s.getId().equals(set.getId())).findFirst().orElse(null);
+
+            if(delSet == null){
                 responseEvent.setStatusCode(HttpStatusCode.BAD_REQUEST);
                 responseEvent.setBody("Set not found in user favorites!");
                 return responseEvent;
             }
+            sets.remove(delSet);
+//            if(sets.contains(setDoc))
+//                sets.remove(setDoc);
+//            else {
+//                responseEvent.setStatusCode(HttpStatusCode.BAD_REQUEST);
+//                responseEvent.setBody("Set not found in user favorites!");
+//                return responseEvent;
+//            }
 
             // Update set favorite count
             set.setFavorites(set.getFavorites() - 1);
