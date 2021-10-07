@@ -4,3 +4,9 @@
 
 # Build folder
 /target/
+
+# Log files
+*.log
+
+# AWS Files
+.aws-sam/

@@ -5,12 +5,13 @@ Resources:
   DeleteFavoritedSetFx:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: target/post_profile_picture-1.0.jar
-      Handler: <QUALIFIED_HANDLER_URL>
+      CodeUri: target/delete_user_favorite_set-1.0.jar
+      Handler: com.revature.delete_user_favorites.DeleteUserFavoritesHandler
       Runtime: java8.al2
       Description: Java function
       MemorySize: 256
       Timeout: 30
       Tracing: Active
       Policies:
-        - <YOUR_POLICIES_HERE>
+        - arn:aws:iam::011217676466:policy/dynamodb-update-users-item
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
